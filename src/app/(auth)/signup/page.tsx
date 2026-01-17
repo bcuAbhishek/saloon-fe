@@ -36,9 +36,9 @@ export default function SignupPage() {
       dob: "",
       agreeToTerms: false,
     },
-    validators: {
-      onSubmit: registerFormSchema,
-    },
+    // validators: {
+    //   onSubmit: registerFormSchema,
+    // },
     onSubmit: async ({ value }: { value: any }) => {
       // Remove local-only fields before sending to API
       const { confirmPassword, dob, agreeToTerms, ...apiData } = value;
