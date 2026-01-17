@@ -1,6 +1,8 @@
 'use client'
 
+import HomePageSection from "@/components/sections/home-page";
 import { getUserProfileQuery } from "@/modules/auth/queries";
+import { Home } from "lucide-react";
 
 export default function Page() {
 
@@ -9,14 +11,7 @@ export default function Page() {
   console.log(`USER PROFILE : ${JSON.stringify(user)}, isLoading: ${isLoading}, isError: ${isError}`)
   return (
     <div>
-      {isLoading && <p>Loading...</p>}
-      {isError && <p>Error loading user profile. Maybe you have not logged in yet.</p>}
-      {user && (
-        <div>
-          <h1>Welcome, {user.fullName}!</h1>
-          <p>Email: {user.email}</p>
-        </div>
-      )}
+       <HomePageSection />
     </div>
   );
 }
