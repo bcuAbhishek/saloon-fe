@@ -12,9 +12,9 @@ export const useRegisterMutation = () => {
   return useMutation({
     mutationFn: (data: UserRegister) => authApi.register(data),
     onSuccess: (response: UserEnvelope) => {
-      toast.success(response.detail || "User registered successfully");
-      queryClient.setQueryData(authKeys.currentUser(), response.data);
-      router.push("/");
+      toast.success("User registered successfully");
+      queryClient.invalidateQueries({ queryKey: authKeys.all });
+      router.push("/dashboard");
     },
     onError: (error: any) => {
       toast.error(
@@ -31,9 +31,9 @@ export const useLoginMutation = () => {
   return useMutation({
     mutationFn: (credentials: UserLogin) => authApi.login(credentials),
     onSuccess: (response: UserEnvelope) => {
-      toast.success(response.detail || "Login successful");
-      queryClient.setQueryData(authKeys.currentUser(), response.data);
-      router.push("/");
+      toast.success("Login successful");
+      queryClient.invalidateQueries({ queryKey: authKeys.all });
+      router.push("/dashboard");
     },
     onError: (error: any) => {
       toast.error(
@@ -53,7 +53,6 @@ export const useLogoutMutation = () => {
       return authApi.logout();
     },
     onSuccess: () => {
-      queryClient.setQueryData(authKeys.currentUser(), null);
       queryClient.clear();
       router.push("/login");
       toast.success("Logged out successfully");

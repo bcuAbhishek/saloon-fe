@@ -1,13 +1,13 @@
 "use client";
 
 import Container from "@/layout/container";
-import { getUserProfileQuery } from "@/modules/auth/queries";
+import { useGetProfileQuery } from "@/modules/auth/queries";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 export default function HomePageSection() {
   const router = useRouter();
-  const { user } = getUserProfileQuery();
+  const { user } = useGetProfileQuery();
 
   const handleGetStarted = () => {
     if (user) {

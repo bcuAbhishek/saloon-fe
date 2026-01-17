@@ -7,7 +7,7 @@ export const authKeys = {
   currentUser: () => [...authKeys.all, "currentUser"] as const,
 };
 
-export const getUserProfileQuery = () => {
+export const useGetProfileQuery = () => {
   const query = useQuery({
     queryKey: authKeys.currentUser(),
     queryFn: async () => {
@@ -22,5 +22,6 @@ export const getUserProfileQuery = () => {
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
+    isAuthenticated: !!query.data?.data && !query.isError,
   };
 };
