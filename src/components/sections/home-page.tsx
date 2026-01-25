@@ -33,9 +33,7 @@ export default function HomePageSection() {
         <p className="text-base md:text-lg lg:text-xl">
           Book, manage, and grow your salon — smarter.
         </p>
-        <div className="w-full max-w-xl mx-auto pt-4 child-animate-pulse">
-           <SearchBar placeholder="Search for hair, nails, or massage..." />
-        </div>
+       
       </section>
         
         <Button
