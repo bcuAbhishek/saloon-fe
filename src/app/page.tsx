@@ -1,3 +1,4 @@
+"use client";
 import HomePageSection from "@/components/sections/home-page";
 
 export default function Page() {
