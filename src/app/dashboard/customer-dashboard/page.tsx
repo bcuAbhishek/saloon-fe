@@ -1,10 +1,11 @@
 'use client'
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageSquare, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Container from "@/layout/container";
 import DynamicServiceCard from "@/components/cards/dynamic-service-card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 interface Appointment {
   id: string;
@@ -17,11 +18,26 @@ interface Appointment {
   status: "upcoming" | "completed" | "cancelled";
   paymentStatus: string;
   bookingId: string;
+  hasFeedback?: boolean;
 }
 
 export default function CustomerDashboardPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"upcoming" | "completed" | "cancelled">("upcoming");
+  const [submittedFeedbacks, setSubmittedFeedbacks] = useState<Set<string>>(new Set());
+
+  // Load submitted feedbacks from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("submittedFeedbacks");
+    if (stored) {
+      setSubmittedFeedbacks(new Set(JSON.parse(stored)));
+    }
+  }, []);
+
+  // Check if feedback was submitted for an appointment
+  const hasFeedbackSubmitted = (appointmentId: string) => {
+    return submittedFeedbacks.has(appointmentId);
+  };
 
   // Sample appointments data - this would come from API in real app
   const appointments: Appointment[] = [
@@ -60,9 +76,23 @@ export default function CustomerDashboardPage() {
       status: "completed",
       paymentStatus: "Paid",
       bookingId: "1234567888",
+      hasFeedback: false,
     },
     {
       id: "4",
+      serviceName: "Classic Haircut",
+      serviceLabel: "Hair Service",
+      staffName: "Mike",
+      date: "Sun, Jan 20",
+      time: "3:00 PM",
+      image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80",
+      status: "completed",
+      paymentStatus: "Paid",
+      bookingId: "1234567666",
+      hasFeedback: true,
+    },
+    {
+      id: "5",
       serviceName: "Classic Haircut",
       serviceLabel: "Hair Service",
       staffName: "Mike",
@@ -76,6 +106,11 @@ export default function CustomerDashboardPage() {
   ];
 
   const filteredAppointments = appointments.filter(apt => apt.status === activeTab);
+
+  const handleGiveFeedback = (appointment: Appointment) => {
+    // Navigate to feedback page with appointment data
+    router.push(`/dashboard/feedback?id=${appointment.id}&service=${encodeURIComponent(appointment.serviceName)}&date=${encodeURIComponent(appointment.date)}&time=${encodeURIComponent(appointment.time)}&image=${encodeURIComponent(appointment.image)}`);
+  };
 
   const tabs = [
     { key: "upcoming" as const, label: "Upcoming" },
@@ -122,15 +157,37 @@ export default function CustomerDashboardPage() {
           </div>
         ) : (
           filteredAppointments.map((appointment) => (
-            <DynamicServiceCard
-              key={appointment.id}
-              label={appointment.serviceLabel}
-              title={appointment.serviceName}
-              description={`With ${appointment.staffName} · ${appointment.date} · ${appointment.time}`}
-              badgeText={appointment.paymentStatus}
-              image={appointment.image}
-              href={`/dashboard/booking-summary/${appointment.bookingId}`}
-            />
+            <div key={appointment.id} className="flex flex-col gap-2">
+              <DynamicServiceCard
+                label={appointment.serviceLabel}
+                title={appointment.serviceName}
+                description={`With ${appointment.staffName} · ${appointment.date} · ${appointment.time}`}
+                badgeText={appointment.paymentStatus}
+                image={appointment.image}
+                href={`/dashboard/booking-summary/${appointment.bookingId}`}
+              />
+              {/* Feedback button for completed services */}
+              {appointment.status === "completed" && (
+                <div className="px-2">
+                  {appointment.hasFeedback || hasFeedbackSubmitted(appointment.id) ? (
+                    <div className="flex items-center gap-2 text-sm text-green-600">
+                      <CheckCircle className="size-4" />
+                      <span>Feedback submitted</span>
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full gap-2"
+                      onClick={() => handleGiveFeedback(appointment)}
+                    >
+                      <MessageSquare className="size-4" />
+                      Give Feedback
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           ))
         )}
       </div>

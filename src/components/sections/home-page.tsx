@@ -34,7 +34,6 @@ export default function HomePageSection() {
           <p className="text-base md:text-lg lg:text-xl">
             Book, manage, and grow your salon — smarter.
           </p>
-       
         </section>
         
         <Button

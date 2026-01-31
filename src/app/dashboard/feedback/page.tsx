@@ -1,23 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { StarRating } from "@/components/ui/star-rating";
-
-// Mock data for the completed service
-const completedService = {
-  date: "Today",
-  title: "Haircut",
-  time: "10:00 AM - 11:00 AM",
-  image: "/images/haircut.jpg",
-};
+import DynamicServiceCard from "@/components/cards/dynamic-service-card";
 
 export default function FeedbackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Get service data from URL params
+  const appointmentId = searchParams.get("id") || "";
+  const serviceName = searchParams.get("service") || "Service";
+  const serviceDate = searchParams.get("date") || "Today";
+  const serviceTime = searchParams.get("time") || "";
+  const serviceImage = searchParams.get("image") || "/images/default.jpg";
+
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -27,13 +28,35 @@ export default function FeedbackPage() {
   };
 
   const handleSubmit = () => {
-    // Handle feedback submission
-    console.log({
+    // Store feedback data (would be an API call in production)
+    const feedbackData = {
+      appointmentId,
       rating,
       feedback,
-      service: completedService.title,
-    });
+      service: serviceName,
+      submittedAt: new Date().toISOString(),
+    };
+    console.log("Feedback submitted:", feedbackData);
+    
+    // Save to localStorage to track submitted feedbacks
+    const stored = localStorage.getItem("submittedFeedbacks");
+    const submittedFeedbacks: string[] = stored ? JSON.parse(stored) : [];
+    if (!submittedFeedbacks.includes(appointmentId)) {
+      submittedFeedbacks.push(appointmentId);
+      localStorage.setItem("submittedFeedbacks", JSON.stringify(submittedFeedbacks));
+    }
+    
+    // Show thank you message
     setIsSubmitted(true);
+    
+    // Reset form after a short delay
+    setTimeout(() => {
+      setRating(0);
+      setFeedback("");
+      setIsSubmitted(false);
+      // Navigate back after reset
+      router.back();
+    }, 2000);
   };
 
   return (
@@ -53,26 +76,13 @@ export default function FeedbackPage() {
       {/* Content */}
       <div className="flex-1 p-4 flex flex-col">
         {/* Service Info */}
-        <div className="flex items-start justify-between mb-8">
-          <div className="flex flex-col gap-1">
-            <span className="text-brand text-sm font-medium">
-              {completedService.date}
-            </span>
-            <h2 className="text-lg font-semibold text-gray-900">
-              {completedService.title}
-            </h2>
-            <span className="text-sm text-brand">
-              {completedService.time}
-            </span>
-          </div>
-          <div className="relative w-20 h-16 rounded-lg overflow-hidden">
-            <Image
-              src={completedService.image}
-              alt={completedService.title}
-              fill
-              className="object-cover"
-            />
-          </div>
+        <div className="mb-6">
+          <DynamicServiceCard
+            label={serviceDate}
+            title={serviceName}
+            description={serviceTime}
+            image={serviceImage}
+          />
         </div>
 
         {/* Rating Section */}
@@ -80,11 +90,11 @@ export default function FeedbackPage() {
           <h3 className="text-base font-medium text-gray-900 mb-4">
             Rate your experience
           </h3>
-          {/* <StarRating
+          <StarRating
             rating={rating}
             onRatingChange={setRating}
             size="md"
-          /> */}
+          />
         </div>
 
         {/* Feedback Textarea */}
@@ -113,7 +123,7 @@ export default function FeedbackPage() {
 
           {/* Thank you message */}
           {isSubmitted && (
-            <p className="text-center text-gray-500 text-sm">
+            <p className="text-center text-primary-text text-sm">
               Thank you for your feedback!
             </p>
           )}
