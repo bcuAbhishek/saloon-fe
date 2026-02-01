@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from "react";
 import { useGetProfileQuery } from "@/modules/auth/queries";
 import { useLogoutMutation } from "@/modules/auth/mutation";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,20 @@ import { BellRing } from "lucide-react";
 import QuickActionCard from "@/components/cards/quick-action-cards";
 import DynamicServiceCard from "@/components/cards/dynamic-service-card";
 import { SearchBar } from "@/components/ui/searchbar";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 6;
 
 export default function Page() {
+    const [currentPage, setCurrentPage] = useState(1);
     const { user , isLoading } = useGetProfileQuery();
     if (isLoading) {
         return <div>Loading...</div>;
@@ -54,6 +67,37 @@ export default function Page() {
         },
     ];
 
+    const totalPages = Math.ceil(quickActions.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentActions = quickActions.slice(startIndex, endIndex);
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+        }
+    };
+
+    const renderPageNumbers = () => {
+        const pages: (number | 'ellipsis')[] = [];
+        
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            if (currentPage <= 3) {
+                pages.push(1, 2, 3, 'ellipsis', totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(1, 'ellipsis', totalPages - 2, totalPages - 1, totalPages);
+            } else {
+                pages.push(1, 'ellipsis', currentPage, 'ellipsis', totalPages);
+            }
+        }
+        
+        return pages;
+    };
+
 
     return (
         <Container className="py-4 md:py-8 flex flex-col space-y-4">
@@ -75,19 +119,63 @@ export default function Page() {
             <div className="flex justify-between gap-8 my-6 items-center">
                 <h2 className="">Saloon</h2>
                 <SearchBar
-                    placeholder="Search for saloon/service"                   
+                    placeholder="Search for saloon"                   
                 />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-                {quickActions.map((action) => (
+                {currentActions.map((action, index) => (
                     <QuickActionCard
-                        key={action.slug}
+                        key={`${action.slug}-${startIndex + index}`}
                         title={action.title}
                         image={action.image}
                         slug={action.slug}
                     />
                 ))}
             </div>
+            {totalPages > 1 && (
+                <Pagination className="mt-6">
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious 
+                                href="#" 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handlePageChange(currentPage - 1);
+                                }}
+                                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                        </PaginationItem>
+                        {renderPageNumbers().map((page, index) => (
+                            <PaginationItem key={index}>
+                                {page === 'ellipsis' ? (
+                                    <PaginationEllipsis />
+                                ) : (
+                                    <PaginationLink 
+                                        href="#" 
+                                        isActive={currentPage === page}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handlePageChange(page);
+                                        }}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                )}
+                            </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext 
+                                href="#" 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handlePageChange(currentPage + 1);
+                                }}
+                                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            )}
             <div></div>
         </Container>
     );
