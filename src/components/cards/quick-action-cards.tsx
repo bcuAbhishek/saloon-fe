@@ -14,9 +14,9 @@ interface QuickActionCardProps {
 export default function QuickActionCard({ title, image, slug, className }: QuickActionCardProps) {
   return (
     <Link
-      href={`/${slug}`}
+      href={slug}
       className={cn(
-        "group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-muted transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        "group relative block aspect-4/5 overflow-hidden rounded-2xl bg-muted transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
         className
       )}
     >

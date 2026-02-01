@@ -106,14 +106,14 @@ export default function LoginPage() {
 
           <div className="space-y-2">
             <Button 
-              variant="secondary" 
+              variant="brand" 
               className="w-full h-14 rounded-xl text-lg flex items-center justify-center gap-3 bg-[#f3f0f1]"
               onClick={() => {}}
             >
               Google
             </Button>
             <Button 
-              variant="secondary" 
+              variant="brand" 
               className="w-full h-14 rounded-xl text-lg flex items-center justify-center gap-3 bg-[#f3f0f1]"
               onClick={() => {}}
             >

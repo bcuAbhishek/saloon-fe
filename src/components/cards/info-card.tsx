@@ -11,6 +11,7 @@ interface InfoCardProps {
   image: string;
   href?: string;
   onClick?: () => void;
+  selected?: boolean;
   className?: string;
 }
 
@@ -21,10 +22,11 @@ export default function InfoCard({
   image,
   href,
   onClick,
+  selected,
   className,
 }: InfoCardProps) {
   const CardContent = (
-    <div className="flex items-center justify-between gap-4 p-4">
+    <div className={cn("flex items-center justify-between gap-4 p-4", selected && "bg-slate-100")}>
       {/* Left Content */}
       <div className="flex flex-col flex-1 min-w-0 items-start ">
         <span className="text-sm  text-primary-text mb-1">
@@ -39,7 +41,7 @@ export default function InfoCard({
       </div>
 
       {/* Right Image */}
-      <div className="relative flex-shrink-0 w-32 h-20 overflow-hidden rounded-2xl">
+      <div className="relative shrink-0 w-32 h-20 overflow-hidden rounded-2xl">
         <Image
           src={image}
           alt={title}
@@ -76,3 +78,4 @@ export default function InfoCard({
     </button>
   );
 }
+

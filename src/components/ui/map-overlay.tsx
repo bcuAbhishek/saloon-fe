@@ -259,7 +259,7 @@ export default function MapOverlay({
             </Button>
             <Button
               type="button"
-              variant="primary"
+              variant="brand"
               onClick={handleConfirm}
               disabled={!markerPosition || isLoadingAddress}
               className="flex-1"
