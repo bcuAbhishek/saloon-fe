@@ -2,6 +2,11 @@ import { apiClient } from "@/lib/api/client";
 import type {
     CategoryDetailEnvelope,
     CategoryListEnvelope,
+    GetSaloonsParams,
+    GetServicesParams,
+    SaloonDetailEnvelope,
+    SaloonListEnvelope,
+    ServiceArrayEnvelope,
     ServiceDetailEnvelope,
     ServiceListEnvelope,
 } from "./schema";
@@ -20,14 +25,34 @@ export const publicApi = {
     return response.data;
   },
 
+  // Saloons
+  getSaloons: async (params?: GetSaloonsParams): Promise<SaloonListEnvelope> => {
+    const response = await apiClient.get<SaloonListEnvelope>("/public/saloons", {
+      params: {
+        search: params?.search,
+        page: params?.page,
+        page_size: params?.pageSize,
+      },
+    });
+    return response.data;
+  },
+
+  getSaloon: async (id: string): Promise<SaloonDetailEnvelope> => {
+    const response = await apiClient.get<SaloonDetailEnvelope>(
+      `/public/saloons/${id}`
+    );
+    return response.data;
+  },
+
+  getSaloonServices: async (id: string): Promise<ServiceArrayEnvelope> => {
+    const response = await apiClient.get<ServiceArrayEnvelope>(
+      `/public/saloons/${id}/services`
+    );
+    return response.data;
+  },
+
   // Services
-  getServices: async (params?: {
-    saloonId?: string;
-    categoryId?: string;
-    search?: string;
-    page?: number;
-    pageSize?: number;
-  }): Promise<ServiceListEnvelope> => {
+  getServices: async (params?: GetServicesParams): Promise<ServiceListEnvelope> => {
     const response = await apiClient.get<ServiceListEnvelope>("/public/services", {
       params: {
         saloon_id: params?.saloonId,

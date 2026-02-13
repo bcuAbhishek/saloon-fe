@@ -25,41 +25,37 @@ const paymentOptions: PaymentOption[] = [
     id: "esewa",
     name: "eSewa",
     description: "Pay with your eSewa wallet",
-    logo: "/esewa-logo.png",
+    logo: "/esewa.jpg",
   },
   {
     id: "khalti",
     name: "Khalti",
     description: "Pay with your Khalti wallet",
-    logo: "/khalti-logo.png",
+    logo: "/khalti.jpg",
   },
 ];
 
-export function Step3({ selectedItem, selectedStaff, selectedDate, selectedTime, totalAmount = 1000, onNext, onPaymentMethodChange }: Step3Props) {
-  const [selectedPayment, setSelectedPayment] = useState<string>("");
-  
+export function Step3({ selectedItem, selectedStaff, selectedDate, selectedTime, totalAmount = 1000, onNext, onPaymentMethodChange, selectedPayment }: Step3Props & { selectedPayment?: string }) {
   const advanceAmount = totalAmount * 0.2;
 
   const handlePaymentSelect = (paymentId: string) => {
-    setSelectedPayment(paymentId);
     onPaymentMethodChange?.(paymentId);
   };
 
   return (
     <Container className="flex flex-col h-full">
-      <div className="flex-1">
+      <div className="">
         <h2 className="text-xl font-bold mb-6">Choose Payment Method</h2>
-        
         <div className="space-y-4">
           {paymentOptions.map((option) => (
             <div
               key={option.id}
               onClick={() => handlePaymentSelect(option.id)}
               className={cn(
-                "flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all",
-                selectedPayment === option.id 
-                  ? "bg-primary/10 border-2 border-primary" 
-                  : "bg-contrast-bg border border-transparent"
+                "flex items-center justify-between p-4 cursor-pointer ",
+                selectedPayment === option.id
+                  ? "bg-none border-2 border-primary-text"
+                  : "bg-none"
               )}
             >
               <div>
