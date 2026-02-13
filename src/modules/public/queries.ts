@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { publicApi } from "./api";
 import type { GetSaloonsParams, GetServicesParams } from "./schema";
 
@@ -21,6 +21,7 @@ export const useGetSaloons = (params?: GetSaloonsParams) => {
   return useQuery({
     queryKey: ["public", "saloons", params],
     queryFn: () => publicApi.getSaloons(params),
+    placeholderData: keepPreviousData,
   });
 };
 

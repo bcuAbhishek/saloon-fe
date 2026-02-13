@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import DynamicServiceCard from "@/components/cards/dynamic-service-card";
 import QuickActionCard from "@/components/cards/quick-action-cards";
@@ -16,28 +16,38 @@ import Container from "@/layout/container";
 import { useGetProfileQuery } from "@/modules/auth/queries";
 import { useGetSaloons } from "@/modules/public";
 import { BellRing } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
 
 const ITEMS_PER_PAGE = 6;
 
 export default function Page() {
     const [currentPage, setCurrentPage] = useState(1);
-    const { user , isLoading: isUserLoading } = useGetProfileQuery();
-    
+    const [search, setSearch] = useState("");
+    const [debouncedSearch] = useDebounce(search, 500);
+
+    const { user, isLoading: isUserLoading } = useGetProfileQuery();
+
+    // Reset to page 1 when search term changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [debouncedSearch]);
+
     const { data: saloonsData, isLoading: isSaloonsLoading } = useGetSaloons({
         page: currentPage,
-        pageSize: ITEMS_PER_PAGE
+        pageSize: ITEMS_PER_PAGE,
+        search: debouncedSearch,
     });
 
     if (isUserLoading) {
         return <div>Loading...</div>;
     }
-    
+
     // Check if saloons data is available
     const saloons = saloonsData?.data?.saloons || [];
+    console.log("saloons: ", saloons)
     const totalSaloons = saloonsData?.data?.total || 0;
     const totalPages = Math.ceil(totalSaloons / ITEMS_PER_PAGE);
-
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
@@ -47,7 +57,7 @@ export default function Page() {
 
     const renderPageNumbers = () => {
         const pages: (number | 'ellipsis')[] = [];
-        
+
         if (totalPages <= 5) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
@@ -61,10 +71,9 @@ export default function Page() {
                 pages.push(1, 'ellipsis', currentPage, 'ellipsis', totalPages);
             }
         }
-        
+
         return pages;
     };
-
 
     return (
         <Container className="py-4 md:py-8 flex flex-col space-y-4">
@@ -86,19 +95,21 @@ export default function Page() {
             <div className="flex justify-between gap-8 my-6 items-center">
                 <h2 className="">Saloon</h2>
                 <SearchBar
-                    placeholder="Search for saloon"                   
+                    placeholder="Search for saloon"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
-            
+
             {isSaloonsLoading ? (
-                 <div className="flex justify-center my-10">Loading saloons...</div>
+                <div className="flex justify-center my-10">Loading saloons...</div>
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-6">
                     {saloons.map((saloon) => (
                         <QuickActionCard
                             key={saloon.id}
                             title={saloon.name}
-                            image={saloon.images.find(img => img.isThumbnail)?.imageUrl || "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80"}
+                            image={saloon.images.find(img => img.isThumbnail)?.imageUrl || saloon.images[0]?.imageUrl || "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80"}
                             slug={`/saloon/${saloon.id}`}
                         />
                     ))}
@@ -114,8 +125,8 @@ export default function Page() {
                 <Pagination className="mt-6">
                     <PaginationContent>
                         <PaginationItem>
-                            <PaginationPrevious 
-                                href="#" 
+                            <PaginationPrevious
+                                href="#"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     handlePageChange(currentPage - 1);
@@ -128,8 +139,8 @@ export default function Page() {
                                 {page === 'ellipsis' ? (
                                     <PaginationEllipsis />
                                 ) : (
-                                    <PaginationLink 
-                                        href="#" 
+                                    <PaginationLink
+                                        href="#"
                                         isActive={currentPage === page}
                                         onClick={(e) => {
                                             e.preventDefault();
@@ -142,8 +153,8 @@ export default function Page() {
                             </PaginationItem>
                         ))}
                         <PaginationItem>
-                            <PaginationNext 
-                                href="#" 
+                            <PaginationNext
+                                href="#"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     handlePageChange(currentPage + 1);

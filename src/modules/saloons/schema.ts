@@ -25,12 +25,18 @@ export const publicSaloonResponseSchema = z.object({
   averageRating: z.number().nullable().optional(),
 });
 
+export const publicCategoryResponseSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+});
+
 export const publicServiceResponseSchema = z.object({
   id: z.string().uuid(),
   saloonId: z.string().uuid(),
   name: z.string(),
   categoryId: z.string().uuid(),
-  category: z.any().optional(), // Can expand if needed
+  category: publicCategoryResponseSchema.nullable().optional(),
   description: z.string().nullable().optional(),
   price: z.number(),
   imageUrl: z.string().nullable().optional(),

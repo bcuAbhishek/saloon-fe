@@ -1,8 +1,8 @@
 import { apiClient } from "@/lib/api/client";
 import type {
-    SaloonDetailEnvelope,
-    SaloonListEnvelope,
-    ServiceListEnvelope,
+  SaloonDetailEnvelope,
+  SaloonListEnvelope,
+  ServiceListEnvelope,
 } from "./schema";
 
 export const saloonsApi = {

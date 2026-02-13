@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "krishdeeves.sfo3.digitaloceanspaces.com",
+      }
     ],
   },
   output: "standalone"
