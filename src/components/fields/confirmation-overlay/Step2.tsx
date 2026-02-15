@@ -1,6 +1,5 @@
 import Container from "@/layout/container";
 import DynamicServiceCard from "@/components/cards/dynamic-service-card";
-import BillingSummary from "@/components/features/billing-summary";
 import BillingCheckAgreement from "@/components/features/billing-check-agreement";
 
 interface ItemWithSelection {
@@ -9,29 +8,23 @@ interface ItemWithSelection {
   subtext: string;
   image: string;
   price: number;
-  staff: string;
   date: Date | undefined;
   time: string;
 }
 
 interface Step2Props {
   itemsWithSelections: ItemWithSelection[];
-  onNext: () => void;
+  totalAmount: number;
   agreed?: boolean;
   setAgreed?: (val: boolean) => void;
 }
 
-export function Step2({ itemsWithSelections, onNext, agreed = false, setAgreed }: Step2Props) {
+export function Step2({ itemsWithSelections, totalAmount, agreed = false, setAgreed }: Step2Props) {
   
   const formatDate = (date: Date | undefined) => {
     if (!date) return "";
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
-
-  const billingItems = itemsWithSelections.map(item => ({
-    name: item.title,
-    price: item.price,
-  }));
 
   return (
     <Container>
@@ -40,14 +33,24 @@ export function Step2({ itemsWithSelections, onNext, agreed = false, setAgreed }
                 key={item.title}
                 label={item.label || "Selected Service"}
                 title={item.title || "Service"}
-                description={`With ${item.staff}`}
                 image={item.image || "/placeholder.png"}
                 badgeText={`${formatDate(item.date)} · ${item.time || ""}`}
                 className="mb-4"
             />
         ))}
             
-        <BillingSummary items={billingItems} />
+        <div className="w-full p-6 space-y-4">
+          <h2 className="text-2xl font-bold text-foreground text-start">Payment</h2>
+          <div className="flex justify-between items-center text-xl pt-2 border-t">
+            <span className="text-primary-text">Total Amount</span>
+            <span className="text-foreground font-bold">
+              Rs. {totalAmount.toLocaleString()}
+            </span>
+          </div>
+          <p className="text-sm text-primary-text">
+            Payment will be made physically at the saloon
+          </p>
+        </div>
                
         <BillingCheckAgreement 
           checked={agreed}

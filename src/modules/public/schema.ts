@@ -19,42 +19,29 @@ export type PublicCategory = z.infer<typeof publicCategoryResponseSchema>;
 
 export const publicSaloonImageSchema = z.object({
   id: z.string().uuid(),
-  imageUrl: z.string().url(),
+  imageUrl: z.string(),
   isThumbnail: z.boolean(),
 });
 
 export type PublicSaloonImage = z.infer<typeof publicSaloonImageSchema>;
 
-export const publicSaloonResponseSchema = z.object({
+// ============================================================================
+// Public Staff Schemas
+// ============================================================================
+
+export const publicStaffResponseSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
-  address: z.string(),
-  phone: z.string(),
-  description: z.string().nullable().optional(),
-  openingHour: z.string().nullable().optional(), // DateTime as string
-  closingHour: z.string().nullable().optional(), // DateTime as string
-  isVerified: z.boolean(),
-  images: z.array(publicSaloonImageSchema).default([]),
+  phone: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+  specialization: z.string().nullable().optional(),
+  imageUrl: z.string().nullable().optional(),
 });
 
-export type PublicSaloon = z.infer<typeof publicSaloonResponseSchema>;
-
-export const publicSaloonDetailResponseSchema = publicSaloonResponseSchema.extend({
-  servicesCount: z.number().int().default(0),
-  averageRating: z.number().nullable().optional(),
-});
-
-export type PublicSaloonDetail = z.infer<typeof publicSaloonDetailResponseSchema>;
-
-export const publicSaloonListResponseSchema = z.object({
-  saloons: z.array(publicSaloonResponseSchema),
-  total: z.number().int(),
-});
-
-export type PublicSaloonListResponse = z.infer<typeof publicSaloonListResponseSchema>;
+export type PublicStaff = z.infer<typeof publicStaffResponseSchema>;
 
 // ============================================================================
-// Public Service Schemas
+// Public Service Schemas (defined before saloon detail for schema composition)
 // ============================================================================
 
 export const publicServiceResponseSchema = z.object({
@@ -77,6 +64,39 @@ export const publicServiceListResponseSchema = z.object({
 });
 
 export type PublicServiceListResponse = z.infer<typeof publicServiceListResponseSchema>;
+
+// ============================================================================
+// Public Saloon Schemas (continued)
+// ============================================================================
+
+export const publicSaloonResponseSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  address: z.string(),
+  phone: z.string(),
+  description: z.string().nullable().optional(),
+  openingHour: z.string().nullable().optional(), // Time as "HH:mm:ss" (e.g. "09:30:00")
+  closingHour: z.string().nullable().optional(), // Time as "HH:mm:ss" (e.g. "18:30:00")
+  isVerified: z.boolean(),
+  images: z.array(publicSaloonImageSchema).default([]),
+});
+
+export type PublicSaloon = z.infer<typeof publicSaloonResponseSchema>;
+
+export const publicSaloonDetailResponseSchema = publicSaloonResponseSchema.extend({
+  services: z.array(publicServiceResponseSchema).default([]),
+  staffs: z.array(publicStaffResponseSchema).default([]),
+  averageRating: z.number().nullable().optional(),
+});
+
+export type PublicSaloonDetail = z.infer<typeof publicSaloonDetailResponseSchema>;
+
+export const publicSaloonListResponseSchema = z.object({
+  saloons: z.array(publicSaloonResponseSchema),
+  total: z.number().int(),
+});
+
+export type PublicSaloonListResponse = z.infer<typeof publicSaloonListResponseSchema>;
 
 //Params Schemas
 export const getSaloonsParamsSchema = z.object({

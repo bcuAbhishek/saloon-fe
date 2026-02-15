@@ -1,5 +1,5 @@
-import { NameChip } from "@/components/cards/name-chip";
 import { Calendar } from "@/components/ui/calendar";
+import { NameChip } from "@/components/cards/name-chip";
 
 interface ServiceItem {
   label: string;
@@ -10,7 +10,6 @@ interface ServiceItem {
 }
 
 interface ServiceSelection {
-  staff: string;
   date: Date | undefined;
   time: string;
 }
@@ -22,8 +21,6 @@ interface Step1Props {
   updateServiceSelection: (serviceTitle: string, field: keyof ServiceSelection, value: string | Date | undefined) => void;
   timeSlots: string[];
 }
-
-const staffList = ["John", "Sarah", "Mike", "Emma", "David"];
 
 export function Step1({
   selectedItems,
@@ -40,20 +37,6 @@ export function Step1({
           <div key={service.title} className="mb-8 border-b border-border pb-6 last:border-b-0">
             <h5 className="text-lg font-bold text-foreground px-4 mb-4">{service.title}</h5>
             
-            <section className="px-4">
-              <h6 className="font-bold mb-2">Staff</h6>
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-                {staffList.map((staff) => (
-                  <NameChip
-                    key={staff}
-                    label={staff}
-                    onClick={() => updateServiceSelection(service.title, 'staff', staff)}
-                    className={selection.staff === staff ? "bg-primary-text text-white" : ""}
-                  />
-                ))}
-              </div>
-            </section>
-            
             <section className="mt-4 px-4">
               <h6 className="font-bold mb-2">Date</h6>
               <div className="flex justify-center">
@@ -61,7 +44,7 @@ export function Step1({
                   mode="single"
                   selected={selection.date}
                   onSelect={(date) => updateServiceSelection(service.title, 'date', date)}
-                  className="[&_[data-selected-single=true]]:bg-white [&_[data-selected-single=true]]:text-primary-text"
+                  className="**:data-[selected-single=true]:bg-white **:data-[selected-single=true]:text-primary-text"
                 />
               </div>
             </section>

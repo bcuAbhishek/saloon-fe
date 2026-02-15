@@ -6,7 +6,6 @@ import { ActionCard } from "@/components/cards/action-card";
 
 interface BookedService {
   title: string;
-  staff: string;
   date: Date | undefined;
   time: string;
   image?: string;
@@ -15,10 +14,12 @@ interface BookedService {
 interface Step4Props {
   bookedServices: BookedService[];
   bookingId?: string;
+  bookingIds?: string[];
   onClose: () => void;
 }
 
-export function Step4({ bookedServices, bookingId = "1234567890", onClose }: Step4Props) {
+export function Step4({ bookedServices, bookingId, bookingIds, onClose }: Step4Props) {
+  const displayId = bookingId ?? bookingIds?.[0] ?? "—";
   const router = useRouter();
 
   const handleViewAppointments = () => {
@@ -40,8 +41,8 @@ export function Step4({ bookedServices, bookingId = "1234567890", onClose }: Ste
             image={service.image || "/placeholder.png"}
             title={service.title}
             metadata={[
-              `With ${service.staff}, ${service.time}`,
-              `Booking ID: ${bookingId}`
+              `${service.time}`,
+              `Booking ID: ${displayId}`
             ]}
           />
         ))}

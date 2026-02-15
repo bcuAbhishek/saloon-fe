@@ -3,7 +3,7 @@
 import InfoCard from "@/components/cards/info-card";
 import { ConfirmationOverlay1 } from "@/components/fields/confirmation-overlay";
 import { SearchBar } from "@/components/ui/searchbar";
-import { useGetSaloonQuery, useGetSaloonServicesQuery } from "@/modules/saloons/queries";
+import { useGetSaloonQuery } from "@/modules/saloons/queries";
 import { ArrowLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -15,6 +15,7 @@ interface ServiceItem {
     subtext: string;
     image: string;
     price: number;
+    durationInMinutes: number;
 }
 
 export default function SaloonPage() {
@@ -27,10 +28,9 @@ export default function SaloonPage() {
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
     const { data: saloonEnvelope, isLoading: isSaloonLoading } = useGetSaloonQuery(saloonId);
-    const { data: servicesEnvelope, isLoading: isServicesLoading } = useGetSaloonServicesQuery(saloonId);
 
     const saloon = saloonEnvelope?.data;
-    const services = servicesEnvelope?.data || [];
+    const services = saloon?.services ?? [];
 
     const toggleServiceSelection = (item: ServiceItem) => {
         setSelectedItems(prev => {
@@ -64,10 +64,11 @@ export default function SaloonPage() {
         subtext: `${service.durationInMinutes} min · Rs. ${service.price}`,
         image: service.imageUrl || "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80",
         price: service.price,
+        durationInMinutes: service.durationInMinutes,
     }));
 
 
-    if (isSaloonLoading || isServicesLoading) {
+    if (isSaloonLoading) {
         return <div className="p-8 text-center">Loading...</div>;
     }
 
@@ -134,7 +135,9 @@ export default function SaloonPage() {
                 )}
             </div>
             
-            <ConfirmationOverlay1 
+            <ConfirmationOverlay1
+                saloonId={saloonId}
+                saloon={saloon}
                 selectedItems={selectedItems}
             />
         </div>

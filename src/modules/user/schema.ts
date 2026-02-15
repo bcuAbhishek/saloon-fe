@@ -47,7 +47,6 @@ export const bookAppointmentSchema = z.object({
   saloonId: z.string().uuid(),
   serviceId: z.string().uuid(),
   scheduledAt: z.string().datetime(), // ISO string
-  notes: z.string().max(500).optional().nullable(),
 });
 
 export const userAppointmentResponseSchema = z.object({
